@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏋️ 30天减脂增肌计划</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 10px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e, #ff4757);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 40px rgba(255, 107, 53, 0.3);
+        }
+        .header h1 { font-size: 1.6em; margin-bottom: 5px; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 0.9em; opacity: 0.95; color: white; }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-card .num {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .label { font-size: 0.7em; color: #888; margin-top: 3px; }
+
+        .progress-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .progress-bar {
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #f7931e, #ffcc02);
+            border-radius: 6px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        .phase-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            padding: 10px 15px;
+            margin: 15px 0 8px 0;
+            border-left: 4px solid #ff6b35;
+            color: #ff6b35;
+        }
+
+        .day-card {
+            background: rgba(255,255,255,0.06);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s;
+        }
+        .day-card.completed {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+        .day-card.today {
+            border: 2px solid #ff6b35;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .day-check {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2.5px solid #555;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .day-card.completed .day-check {
+            border-color: #4CAF50;
+            background: #4CAF50;
+            color: white;
+        }
+        .day-info { flex: 1; }
+        .day-info .day-num {
+            font-size: 0.7em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .day-info .day-type { font-size: 0.95em; font-weight: 600; margin-top: 2px; }
+        .day-info .day-date { font-size: 0.75em; color: #666; }
+        .day-intensity { font-size: 0.7em; margin-left: auto; }
+
+        .day-expand {
+            font-size: 1.2em;
+            color: #555;
+            transition: transform 0.3s;
+            margin-left: 8px;
+        }
+        .day-card.expanded .day-expand { transform: rotate(180deg); }
+
+        .day-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            padding: 0 15px;
+        }
+        .day-card.expanded .day-detail {
+            max-height: 800px;
+            padding: 0 15px 15px;
+        }
+
+        .exercise-list { list-style: none; margin: 10px 0; }
+        .exercise-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85em;
+            display: flex;
+            align-items: flex-start;
+        }
+        .exercise-list li::before {
+            content: '▸';
+            color: #ff6b35;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        .exercise-list .ex-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid #444;
+            margin-right: 8px;
+            flex-shrink: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        .exercise-list .ex-check.checked {
+            border-color: #4CAF50;
+            background: #4CAF50;
+            color: white;
+        }
+        .exercise-list li::before { display: none; }
+
+        .section-label {
+            font-size: 0.75em;
+            color: #ff6b35;
+            font-weight: 600;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cardio-box {
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            font-size: 0.85em;
+            border-left: 3px solid #ff6b35;
+        }
+
+        .diet-section {
+            background: rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .diet-section h3 {
+            color: #ff6b35;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+        .diet-section ul {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+        .diet-section li {
+            padding: 5px 0;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .diet-category {
+            font-weight: 700;
+            color: #f7931e;
+            margin-top: 12px;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .weight-tracker {
+            background: rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .weight-input-row {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            gap: 10px;
+        }
+        .weight-input-row label {
+            font-size: 0.8em;
+            width: 60px;
+            color: #888;
+        }
+        .weight-input-row input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            font-size: 0.9em;
+        }
+        .weight-input-row .unit {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+        .tab-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 15px;
+            color: #666;
+            font-size: 0.7em;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: color 0.3s;
+        }
+        .tab-btn.active { color: #ff6b35; }
+        .tab-btn .tab-icon { font-size: 1.6em; margin-bottom: 2px; }
+
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .motivation-banner {
+            background: linear-gradient(135deg, #1a1a3e, #2d2d5e);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .motivation-banner .quote {
+            font-size: 1.1em;
+            font-style: italic;
+            color: #f7931e;
+            line-height: 1.6;
+        }
+        .motivation-banner .author {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+        .checklist-item .cl-check {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid #444;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .checklist-item.checked .cl-check {
+            border-color: #4CAF50;
+            background: #4CAF50;
+            color: white;
+        }
+        .checklist-item.checked .cl-text {
+            text-decoration: line-through;
+            color: #555;
+        }
+        .cl-text { font-size: 0.85em; }
+
+        .tips-card {
+            background: rgba(247, 147, 30, 0.08);
+            border: 1px solid rgba(247, 147, 30, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .tips-card h4 { color: #f7931e; font-size: 0.9em; margin-bottom: 8px; }
+        .tips-card p { font-size: 0.8em; line-height: 1.6; color: #aaa; }
+
+        .canvas-container {
+            background: rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        canvas { width: 100%; height: 200px; }
+
+        @media (min-width: 768px) {
+            body { max-width: 500px; margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== 页面1: 训练计划 ==================== -->
+<div class="page active" id="page-plan">
+    <div class="header">
+        <h1>🔥 32天减脂增肌计划</h1>
+        <p>180cm / 95kg → 80kg | 2026.03.16 - 04.16</p>
+        <p style="margin-top:5px; font-size:0.85em;">💪 有基础，全力冲刺模式</p>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="num" id="stat-completed">0</div>
+            <div class="label">已完成</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="stat-remaining">32</div>
+            <div class="label">剩余</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="stat-streak">0</div>
+            <div class="label">连续打卡</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="stat-rate">0%</div>
+            <div class="label">完成率</div>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div style="display:flex; justify-content:space-between; font-size:0.8em;">
+            <span>总进度</span>
+            <span id="progress-text">0/32 天</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <div id="motivation-container"></div>
+    <div class="phase-title">🚀 第一周 · 唤醒身体</div>
+
+    <div class="day-card" id="day-1" data-day="1">
+        <div class="day-header" onclick="toggleDay(1)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(1)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 1 · 03月16日 周一</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(1, 0)" data-day="1" data-ex="0">✓</div><span>杠铃卧推 4组×10次 (找到合适重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(1, 1)" data-day="1" data-ex="1">✓</div><span>哑铃上斜卧推 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(1, 2)" data-day="1" data-ex="2">✓</div><span>器械夹胸/龙门架夹胸 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(1, 3)" data-day="1" data-ex="3">✓</div><span>哑铃肩推 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(1, 4)" data-day="1" data-ex="4">✓</div><span>哑铃侧平举 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(1, 5)" data-day="1" data-ex="5">✓</div><span>绳索下压(三头) 3组×15次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步机快走30分钟(坡度8-10, 速度6)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-2" data-day="2">
+        <div class="day-header" onclick="toggleDay(2)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(2)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 2 · 03月17日 周二</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(2, 0)" data-day="2" data-ex="0">✓</div><span>引体向上/高位下拉 4组×8-10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(2, 1)" data-day="2" data-ex="1">✓</div><span>杠铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(2, 2)" data-day="2" data-ex="2">✓</div><span>坐姿绳索划船 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(2, 3)" data-day="2" data-ex="3">✓</div><span>单臂哑铃划船 3组×12次(每侧)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(2, 4)" data-day="2" data-ex="4">✓</div><span>面拉 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(2, 5)" data-day="2" data-ex="5">✓</div><span>杠铃弯举 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(2, 6)" data-day="2" data-ex="6">✓</div><span>锤式弯举 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">椭圆机30分钟(中等强度)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-3" data-day="3">
+        <div class="day-header" onclick="toggleDay(3)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(3)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 3 · 03月18日 周三</div>
+                <div class="day-type">🦵 腿日（股四/股二/臀）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(3, 0)" data-day="3" data-ex="0">✓</div><span>杠铃深蹲 4组×10次 (找感觉,不急加重)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(3, 1)" data-day="3" data-ex="1">✓</div><span>腿举 4组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(3, 2)" data-day="3" data-ex="2">✓</div><span>腿屈伸 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(3, 3)" data-day="3" data-ex="3">✓</div><span>腿弯举 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(3, 4)" data-day="3" data-ex="4">✓</div><span>哑铃箭步走 3组×12步(每侧)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(3, 5)" data-day="3" data-ex="5">✓</div><span>站姿提踵 4组×20次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">快走20分钟(腿日有氧少一点)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-4" data-day="4">
+        <div class="day-header" onclick="toggleDay(4)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(4)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 4 · 03月19日 周四</div>
+                <div class="day-type">🏃 有氧燃脂日</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(4, 0)" data-day="4" data-ex="0">✓</div><span>腹肌训练: 悬垂举腿3组×12 + 卷腹3组×20 + 平板支撑3组×60秒</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步40分钟(速度7-8) 或 动感单车45分钟 或 游泳40分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-5" data-day="5">
+        <div class="day-header" onclick="toggleDay(5)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(5)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 5 · 03月20日 周五</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(5, 0)" data-day="5" data-ex="0">✓</div><span>杠铃卧推 4组×10次 (找到合适重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(5, 1)" data-day="5" data-ex="1">✓</div><span>哑铃上斜卧推 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(5, 2)" data-day="5" data-ex="2">✓</div><span>器械夹胸/龙门架夹胸 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(5, 3)" data-day="5" data-ex="3">✓</div><span>哑铃肩推 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(5, 4)" data-day="5" data-ex="4">✓</div><span>哑铃侧平举 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(5, 5)" data-day="5" data-ex="5">✓</div><span>绳索下压(三头) 3组×15次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步机快走30分钟(坡度8-10, 速度6)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-6" data-day="6">
+        <div class="day-header" onclick="toggleDay(6)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(6)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 6 · 03月21日 周六</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(6, 0)" data-day="6" data-ex="0">✓</div><span>引体向上/高位下拉 4组×8-10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(6, 1)" data-day="6" data-ex="1">✓</div><span>杠铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(6, 2)" data-day="6" data-ex="2">✓</div><span>坐姿绳索划船 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(6, 3)" data-day="6" data-ex="3">✓</div><span>单臂哑铃划船 3组×12次(每侧)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(6, 4)" data-day="6" data-ex="4">✓</div><span>面拉 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(6, 5)" data-day="6" data-ex="5">✓</div><span>杠铃弯举 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(6, 6)" data-day="6" data-ex="6">✓</div><span>锤式弯举 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">椭圆机30分钟(中等强度)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-7" data-day="7">
+        <div class="day-header" onclick="toggleDay(7)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(7)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 7 · 03月22日 周日</div>
+                <div class="day-type">😴 完全休息日</div>
+            </div>
+            <div class="day-intensity">⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(7, 0)" data-day="7" data-ex="0">✓</div><span>全身拉伸 10分钟</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(7, 1)" data-day="7" data-ex="1">✓</div><span>泡沫轴放松 10分钟</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">散步30分钟即可，让身体恢复</div>
+        </div>
+    </div>
+    <div class="phase-title">📈 第二周 · 强度提升</div>
+
+    <div class="day-card" id="day-8" data-day="8">
+        <div class="day-header" onclick="toggleDay(8)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(8)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 8 · 03月23日 周一</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(8, 0)" data-day="8" data-ex="0">✓</div><span>杠铃卧推 4组×8次 (加重5%)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(8, 1)" data-day="8" data-ex="1">✓</div><span>哑铃上斜卧推 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(8, 2)" data-day="8" data-ex="2">✓</div><span>器械夹胸 3组×12次 + 俯卧撑1组力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(8, 3)" data-day="8" data-ex="3">✓</div><span>站姿杠铃推举 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(8, 4)" data-day="8" data-ex="4">✓</div><span>哑铃侧平举 4组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(8, 5)" data-day="8" data-ex="5">✓</div><span>碎颅者(三头) 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(8, 6)" data-day="8" data-ex="6">✓</div><span>绳索下压 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步机慢跑25分钟(速度8) + 快走10分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-9" data-day="9">
+        <div class="day-header" onclick="toggleDay(9)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(9)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 9 · 03月24日 周二</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(9, 0)" data-day="9" data-ex="0">✓</div><span>引体向上 4组×力竭 (加辅助也行)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(9, 1)" data-day="9" data-ex="1">✓</div><span>杠铃划船 4组×8次 (加重)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(9, 2)" data-day="9" data-ex="2">✓</div><span>T杠划船/器械划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(9, 3)" data-day="9" data-ex="3">✓</div><span>直臂下压 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(9, 4)" data-day="9" data-ex="4">✓</div><span>面拉 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(9, 5)" data-day="9" data-ex="5">✓</div><span>EZ杠弯举 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(9, 6)" data-day="9" data-ex="6">✓</div><span>上斜哑铃弯举 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步机慢跑30分钟(速度7-8)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-10" data-day="10">
+        <div class="day-header" onclick="toggleDay(10)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(10)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 10 · 03月25日 周三</div>
+                <div class="day-type">🦵 腿日（股四/股二/臀）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(10, 0)" data-day="10" data-ex="0">✓</div><span>杠铃深蹲 4组×8次 (加重)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(10, 1)" data-day="10" data-ex="1">✓</div><span>前蹲/哈克深蹲 3组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(10, 2)" data-day="10" data-ex="2">✓</div><span>腿举 4组×10次(大重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(10, 3)" data-day="10" data-ex="3">✓</div><span>罗马尼亚硬拉 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(10, 4)" data-day="10" data-ex="4">✓</div><span>腿屈伸+腿弯举 超级组 3组×12</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(10, 5)" data-day="10" data-ex="5">✓</div><span>保加利亚分腿蹲 3组×10次(每侧)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(10, 6)" data-day="10" data-ex="6">✓</div><span>提踵 4组×20次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">椭圆机20分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-11" data-day="11">
+        <div class="day-header" onclick="toggleDay(11)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(11)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 11 · 03月26日 周四</div>
+                <div class="day-type">🏃 有氧燃脂日</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(11, 0)" data-day="11" data-ex="0">✓</div><span>腹肌训练: 悬垂举腿3组×12 + 卷腹3组×20 + 平板支撑3组×60秒</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步40分钟(速度7-8) 或 动感单车45分钟 或 游泳40分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-12" data-day="12">
+        <div class="day-header" onclick="toggleDay(12)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(12)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 12 · 03月27日 周五</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(12, 0)" data-day="12" data-ex="0">✓</div><span>杠铃卧推 4组×8次 (加重5%)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(12, 1)" data-day="12" data-ex="1">✓</div><span>哑铃上斜卧推 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(12, 2)" data-day="12" data-ex="2">✓</div><span>器械夹胸 3组×12次 + 俯卧撑1组力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(12, 3)" data-day="12" data-ex="3">✓</div><span>站姿杠铃推举 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(12, 4)" data-day="12" data-ex="4">✓</div><span>哑铃侧平举 4组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(12, 5)" data-day="12" data-ex="5">✓</div><span>碎颅者(三头) 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(12, 6)" data-day="12" data-ex="6">✓</div><span>绳索下压 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步机慢跑25分钟(速度8) + 快走10分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-13" data-day="13">
+        <div class="day-header" onclick="toggleDay(13)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(13)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 13 · 03月28日 周六</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(13, 0)" data-day="13" data-ex="0">✓</div><span>引体向上 4组×力竭 (加辅助也行)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(13, 1)" data-day="13" data-ex="1">✓</div><span>杠铃划船 4组×8次 (加重)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(13, 2)" data-day="13" data-ex="2">✓</div><span>T杠划船/器械划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(13, 3)" data-day="13" data-ex="3">✓</div><span>直臂下压 3组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(13, 4)" data-day="13" data-ex="4">✓</div><span>面拉 3组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(13, 5)" data-day="13" data-ex="5">✓</div><span>EZ杠弯举 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(13, 6)" data-day="13" data-ex="6">✓</div><span>上斜哑铃弯举 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步机慢跑30分钟(速度7-8)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-14" data-day="14">
+        <div class="day-header" onclick="toggleDay(14)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(14)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 14 · 03月29日 周日</div>
+                <div class="day-type">🧘 积极恢复日</div>
+            </div>
+            <div class="day-intensity">⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(14, 0)" data-day="14" data-ex="0">✓</div><span>全身拉伸 15分钟</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(14, 1)" data-day="14" data-ex="1">✓</div><span>泡沫轴放松 10分钟</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(14, 2)" data-day="14" data-ex="2">✓</div><span>可选: 腹肌训练 (卷腹3组×20 + 平板支撑3组×45秒 + 俄罗斯转体3组×20)</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">户外快走/散步 40-60分钟 或 游泳30分钟</div>
+        </div>
+    </div>
+    <div class="phase-title">🔥 第三周 · 全力冲刺</div>
+
+    <div class="day-card" id="day-15" data-day="15">
+        <div class="day-header" onclick="toggleDay(15)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(15)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 15 · 03月30日 周一</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(15, 0)" data-day="15" data-ex="0">✓</div><span>杠铃卧推 5组×6-8次 (继续加重)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(15, 1)" data-day="15" data-ex="1">✓</div><span>哑铃上斜卧推 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(15, 2)" data-day="15" data-ex="2">✓</div><span>龙门架夹胸 4组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(15, 3)" data-day="15" data-ex="3">✓</div><span>哑铃肩推 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(15, 4)" data-day="15" data-ex="4">✓</div><span>超级组: 侧平举+前平举 3组×12+12</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(15, 5)" data-day="15" data-ex="5">✓</div><span>双杠臂屈伸 3组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(15, 6)" data-day="15" data-ex="6">✓</div><span>绳索下压 4组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT跑步 20分钟(冲刺30秒+慢走60秒)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-16" data-day="16">
+        <div class="day-header" onclick="toggleDay(16)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(16)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 16 · 03月31日 周二</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(16, 0)" data-day="16" data-ex="0">✓</div><span>负重引体向上/引体向上 5组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(16, 1)" data-day="16" data-ex="1">✓</div><span>杠铃划船 5组×6-8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(16, 2)" data-day="16" data-ex="2">✓</div><span>单臂哑铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(16, 3)" data-day="16" data-ex="3">✓</div><span>坐姿绳索划船(V把) 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(16, 4)" data-day="16" data-ex="4">✓</div><span>面拉 4组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(16, 5)" data-day="16" data-ex="5">✓</div><span>超级组: 杠铃弯举+锤式弯举 4组×10+10</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 20-25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-17" data-day="17">
+        <div class="day-header" onclick="toggleDay(17)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(17)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 17 · 04月01日 周三</div>
+                <div class="day-type">🦵 腿日（股四/股二/臀）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(17, 0)" data-day="17" data-ex="0">✓</div><span>杠铃深蹲 5组×5-8次 (冲重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(17, 1)" data-day="17" data-ex="1">✓</div><span>前蹲 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(17, 2)" data-day="17" data-ex="2">✓</div><span>腿举 4组×12次 + 最后1组递减</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(17, 3)" data-day="17" data-ex="3">✓</div><span>罗马尼亚硬拉 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(17, 4)" data-day="17" data-ex="4">✓</div><span>超级组: 腿屈伸+腿弯举 4组×12</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(17, 5)" data-day="17" data-ex="5">✓</div><span>箭步走 3组×20步</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(17, 6)" data-day="17" data-ex="6">✓</div><span>提踵 4组×20次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">快走15分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-18" data-day="18">
+        <div class="day-header" onclick="toggleDay(18)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(18)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 18 · 04月02日 周四</div>
+                <div class="day-type">🏃 有氧燃脂日</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(18, 0)" data-day="18" data-ex="0">✓</div><span>腹肌训练: 悬垂举腿3组×12 + 卷腹3组×20 + 平板支撑3组×60秒</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步40分钟(速度7-8) 或 动感单车45分钟 或 游泳40分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-19" data-day="19">
+        <div class="day-header" onclick="toggleDay(19)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(19)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 19 · 04月03日 周五</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(19, 0)" data-day="19" data-ex="0">✓</div><span>杠铃卧推 5组×6-8次 (继续加重)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(19, 1)" data-day="19" data-ex="1">✓</div><span>哑铃上斜卧推 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(19, 2)" data-day="19" data-ex="2">✓</div><span>龙门架夹胸 4组×12次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(19, 3)" data-day="19" data-ex="3">✓</div><span>哑铃肩推 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(19, 4)" data-day="19" data-ex="4">✓</div><span>超级组: 侧平举+前平举 3组×12+12</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(19, 5)" data-day="19" data-ex="5">✓</div><span>双杠臂屈伸 3组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(19, 6)" data-day="19" data-ex="6">✓</div><span>绳索下压 4组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT跑步 20分钟(冲刺30秒+慢走60秒)</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-20" data-day="20">
+        <div class="day-header" onclick="toggleDay(20)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(20)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 20 · 04月04日 周六</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(20, 0)" data-day="20" data-ex="0">✓</div><span>负重引体向上/引体向上 5组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(20, 1)" data-day="20" data-ex="1">✓</div><span>杠铃划船 5组×6-8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(20, 2)" data-day="20" data-ex="2">✓</div><span>单臂哑铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(20, 3)" data-day="20" data-ex="3">✓</div><span>坐姿绳索划船(V把) 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(20, 4)" data-day="20" data-ex="4">✓</div><span>面拉 4组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(20, 5)" data-day="20" data-ex="5">✓</div><span>超级组: 杠铃弯举+锤式弯举 4组×10+10</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 20-25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-21" data-day="21">
+        <div class="day-header" onclick="toggleDay(21)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(21)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 21 · 04月05日 周日</div>
+                <div class="day-type">😴 完全休息日</div>
+            </div>
+            <div class="day-intensity">⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(21, 0)" data-day="21" data-ex="0">✓</div><span>全身拉伸 10分钟</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(21, 1)" data-day="21" data-ex="1">✓</div><span>泡沫轴放松 10分钟</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">散步30分钟即可，让身体恢复</div>
+        </div>
+    </div>
+    <div class="phase-title">💎 第四周 · 巅峰状态</div>
+
+    <div class="day-card" id="day-22" data-day="22">
+        <div class="day-header" onclick="toggleDay(22)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(22)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 22 · 04月06日 周一</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(22, 0)" data-day="22" data-ex="0">✓</div><span>杠铃卧推 5组×5-8次 (冲击重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(22, 1)" data-day="22" data-ex="1">✓</div><span>上斜哑铃卧推 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(22, 2)" data-day="22" data-ex="2">✓</div><span>龙门架夹胸 3组×15次 (泵感)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(22, 3)" data-day="22" data-ex="3">✓</div><span>阿诺德推举 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(22, 4)" data-day="22" data-ex="4">✓</div><span>超级组: 侧平举+面拉 4组×15+15</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(22, 5)" data-day="22" data-ex="5">✓</div><span>窄距卧推 3组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(22, 6)" data-day="22" data-ex="6">✓</div><span>绳索过头臂屈伸 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-23" data-day="23">
+        <div class="day-header" onclick="toggleDay(23)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(23)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 23 · 04月07日 周二</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(23, 0)" data-day="23" data-ex="0">✓</div><span>负重引体向上/引体向上 5组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(23, 1)" data-day="23" data-ex="1">✓</div><span>杠铃划船 5组×6-8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(23, 2)" data-day="23" data-ex="2">✓</div><span>单臂哑铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(23, 3)" data-day="23" data-ex="3">✓</div><span>坐姿绳索划船(V把) 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(23, 4)" data-day="23" data-ex="4">✓</div><span>面拉 4组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(23, 5)" data-day="23" data-ex="5">✓</div><span>超级组: 杠铃弯举+锤式弯举 4组×10+10</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 20-25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-24" data-day="24">
+        <div class="day-header" onclick="toggleDay(24)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(24)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 24 · 04月08日 周三</div>
+                <div class="day-type">🦵 腿日（股四/股二/臀）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(24, 0)" data-day="24" data-ex="0">✓</div><span>杠铃深蹲 5组×5-8次 (冲重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(24, 1)" data-day="24" data-ex="1">✓</div><span>前蹲 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(24, 2)" data-day="24" data-ex="2">✓</div><span>腿举 4组×12次 + 最后1组递减</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(24, 3)" data-day="24" data-ex="3">✓</div><span>罗马尼亚硬拉 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(24, 4)" data-day="24" data-ex="4">✓</div><span>超级组: 腿屈伸+腿弯举 4组×12</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(24, 5)" data-day="24" data-ex="5">✓</div><span>箭步走 3组×20步</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(24, 6)" data-day="24" data-ex="6">✓</div><span>提踵 4组×20次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">快走15分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-25" data-day="25">
+        <div class="day-header" onclick="toggleDay(25)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(25)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 25 · 04月09日 周四</div>
+                <div class="day-type">🏃 有氧燃脂日</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(25, 0)" data-day="25" data-ex="0">✓</div><span>腹肌训练: 悬垂举腿3组×12 + 卷腹3组×20 + 平板支撑3组×60秒</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步40分钟(速度7-8) 或 动感单车45分钟 或 游泳40分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-26" data-day="26">
+        <div class="day-header" onclick="toggleDay(26)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(26)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 26 · 04月10日 周五</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(26, 0)" data-day="26" data-ex="0">✓</div><span>杠铃卧推 5组×5-8次 (冲击重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(26, 1)" data-day="26" data-ex="1">✓</div><span>上斜哑铃卧推 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(26, 2)" data-day="26" data-ex="2">✓</div><span>龙门架夹胸 3组×15次 (泵感)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(26, 3)" data-day="26" data-ex="3">✓</div><span>阿诺德推举 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(26, 4)" data-day="26" data-ex="4">✓</div><span>超级组: 侧平举+面拉 4组×15+15</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(26, 5)" data-day="26" data-ex="5">✓</div><span>窄距卧推 3组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(26, 6)" data-day="26" data-ex="6">✓</div><span>绳索过头臂屈伸 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-27" data-day="27">
+        <div class="day-header" onclick="toggleDay(27)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(27)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 27 · 04月11日 周六</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(27, 0)" data-day="27" data-ex="0">✓</div><span>负重引体向上/引体向上 5组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(27, 1)" data-day="27" data-ex="1">✓</div><span>杠铃划船 5组×6-8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(27, 2)" data-day="27" data-ex="2">✓</div><span>单臂哑铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(27, 3)" data-day="27" data-ex="3">✓</div><span>坐姿绳索划船(V把) 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(27, 4)" data-day="27" data-ex="4">✓</div><span>面拉 4组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(27, 5)" data-day="27" data-ex="5">✓</div><span>超级组: 杠铃弯举+锤式弯举 4组×10+10</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 20-25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-28" data-day="28">
+        <div class="day-header" onclick="toggleDay(28)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(28)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 28 · 04月12日 周日</div>
+                <div class="day-type">🧘 积极恢复日</div>
+            </div>
+            <div class="day-intensity">⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(28, 0)" data-day="28" data-ex="0">✓</div><span>全身拉伸 15分钟</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(28, 1)" data-day="28" data-ex="1">✓</div><span>泡沫轴放松 10分钟</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(28, 2)" data-day="28" data-ex="2">✓</div><span>可选: 腹肌训练 (卷腹3组×20 + 平板支撑3组×45秒 + 俄罗斯转体3组×20)</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">户外快走/散步 40-60分钟 或 游泳30分钟</div>
+        </div>
+    </div>
+    <div class="phase-title">🏆 冲刺收官</div>
+
+    <div class="day-card" id="day-29" data-day="29">
+        <div class="day-header" onclick="toggleDay(29)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(29)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 29 · 04月13日 周一</div>
+                <div class="day-type">💪 推日（胸/肩/三头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(29, 0)" data-day="29" data-ex="0">✓</div><span>杠铃卧推 5组×5-8次 (冲击重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(29, 1)" data-day="29" data-ex="1">✓</div><span>上斜哑铃卧推 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(29, 2)" data-day="29" data-ex="2">✓</div><span>龙门架夹胸 3组×15次 (泵感)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(29, 3)" data-day="29" data-ex="3">✓</div><span>阿诺德推举 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(29, 4)" data-day="29" data-ex="4">✓</div><span>超级组: 侧平举+面拉 4组×15+15</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(29, 5)" data-day="29" data-ex="5">✓</div><span>窄距卧推 3组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(29, 6)" data-day="29" data-ex="6">✓</div><span>绳索过头臂屈伸 3组×12次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-30" data-day="30">
+        <div class="day-header" onclick="toggleDay(30)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(30)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 30 · 04月14日 周二</div>
+                <div class="day-type">🏋️ 拉日（背/二头）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(30, 0)" data-day="30" data-ex="0">✓</div><span>负重引体向上/引体向上 5组×力竭</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(30, 1)" data-day="30" data-ex="1">✓</div><span>杠铃划船 5组×6-8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(30, 2)" data-day="30" data-ex="2">✓</div><span>单臂哑铃划船 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(30, 3)" data-day="30" data-ex="3">✓</div><span>坐姿绳索划船(V把) 4组×10次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(30, 4)" data-day="30" data-ex="4">✓</div><span>面拉 4组×15次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(30, 5)" data-day="30" data-ex="5">✓</div><span>超级组: 杠铃弯举+锤式弯举 4组×10+10</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">HIIT 20-25分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-31" data-day="31">
+        <div class="day-header" onclick="toggleDay(31)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(31)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 31 · 04月15日 周三</div>
+                <div class="day-type">🦵 腿日（股四/股二/臀）</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(31, 0)" data-day="31" data-ex="0">✓</div><span>杠铃深蹲 5组×5-8次 (冲重量)</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(31, 1)" data-day="31" data-ex="1">✓</div><span>前蹲 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(31, 2)" data-day="31" data-ex="2">✓</div><span>腿举 4组×12次 + 最后1组递减</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(31, 3)" data-day="31" data-ex="3">✓</div><span>罗马尼亚硬拉 4组×8次</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(31, 4)" data-day="31" data-ex="4">✓</div><span>超级组: 腿屈伸+腿弯举 4组×12</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(31, 5)" data-day="31" data-ex="5">✓</div><span>箭步走 3组×20步</span></li>
+                <li><div class="ex-check" onclick="toggleExercise(31, 6)" data-day="31" data-ex="6">✓</div><span>提踵 4组×20次</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">快走15分钟</div>
+        </div>
+    </div>
+
+    <div class="day-card" id="day-32" data-day="32">
+        <div class="day-header" onclick="toggleDay(32)">
+            <div class="day-check" onclick="event.stopPropagation(); toggleComplete(32)">✓</div>
+            <div class="day-info">
+                <div class="day-num">DAY 32 · 04月16日 周四</div>
+                <div class="day-type">🏃 有氧燃脂日</div>
+            </div>
+            <div class="day-intensity">⭐⭐⭐</div>
+            <div class="day-expand">▼</div>
+        </div>
+        <div class="day-detail">
+            <div class="section-label">💪 力量训练</div>
+            <ul class="exercise-list">
+                <li><div class="ex-check" onclick="toggleExercise(32, 0)" data-day="32" data-ex="0">✓</div><span>腹肌训练: 悬垂举腿3组×12 + 卷腹3组×20 + 平板支撑3组×60秒</span></li>
+            </ul>
+            <div class="section-label">🏃 有氧训练</div>
+            <div class="cardio-box">跑步40分钟(速度7-8) 或 动感单车45分钟 或 游泳40分钟</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ==================== 页面2: 饮食指南 ==================== -->
+<div class="page" id="page-diet">
+    <div class="header" style="background: linear-gradient(135deg, #4CAF50, #45a049, #2E7D32);">
+        <h1>🥗 饮食指南</h1>
+        <p>家常菜也能减脂！关键是方法</p>
+    </div>
+
+    <div class="tips-card" style="margin-top:15px;">
+        <h4>⚡ 你的每日热量目标</h4>
+        <p>基础代谢约 2000kcal，每日摄入控制在 <strong style="color:#ff6b35;">1600-1800kcal</strong><br>
+        制造 400-600kcal 热量缺口 + 训练消耗 → 每周减脂约1-1.5斤<br>
+        <strong style="color:#4CAF50;">蛋白质目标: 每天 150-180g</strong>（保护肌肉不流失）</p>
+    </div>
+
+    <div class="diet-section">
+        <h3>核心原则</h3>
+        <ul>
+            <li>每餐吃到7-8分饱就停，绝对不要吃撑</li>
+            <li>先吃菜和肉，最后吃米饭/面食</li>
+            <li>米饭控制在每餐1小碗（约150g）</li>
+            <li>晚餐主食减半或不吃主食</li>
+            <li>睡前3小时不进食</li>
+        </ul>
+    </div>
+
+    <div class="diet-section">
+        <h3>蛋白质补充（最重要‼️）</h3>
+        <ul>
+            <li>每天至少吃6个鸡蛋（早3晚3，蛋黄吃2-3个就行）</li>
+            <li>每餐保证有肉（鸡胸肉/鱼/虾/牛肉/瘦猪肉）</li>
+            <li>一巴掌大小的肉 = 约30g蛋白质</li>
+            <li>每天目标: 150-180g蛋白质</li>
+            <li>买一桶乳清蛋白粉，训练后1勺（简单省事）</li>
+            <li>牛奶/酸奶（无糖）每天1-2杯</li>
+        </ul>
+    </div>
+
+    <div class="diet-section">
+        <h3>家常菜怎么吃</h3>
+        <ul>
+            <li>✅ 多吃: 炒青菜、蒸鱼、白切鸡、炒虾仁、番茄炒蛋、凉拌黄瓜</li>
+            <li>✅ 多吃: 西兰花、菠菜、生菜、黄瓜、番茄</li>
+            <li>⚠️ 少吃: 红烧肉、糖醋排骨（太多糖和油）</li>
+            <li>⚠️ 少吃: 炒饭、炒面、煎饼（碳水+油脂炸弹）</li>
+            <li>❌ 不吃: 奶茶、可乐、果汁、蛋糕、饼干、薯片</li>
+            <li>❌ 不吃: 外卖里的重油重盐菜品</li>
+            <li>⚠️ 如果是家人做饭，跟家人说: 少放油、少勾芡、多蒸煮</li>
+        </ul>
+    </div>
+
+    <div class="diet-section">
+        <h3>简易饮食模板（每天）</h3>
+        <ul>
+            <li>☀️ 早餐(7:00-8:00): 3个鸡蛋+1杯牛奶+1片全麦面包 或 燕麦</li>
+            <li>🌤️ 加餐(10:00): 1个苹果或1根香蕉</li>
+            <li>☀️ 午餐(12:00): 正常家常菜+1碗饭+大量蔬菜+一巴掌肉</li>
+            <li>🌤️ 加餐(15:00): 一把坚果(10-15颗) 或 1杯酸奶</li>
+            <li>🌙 晚餐(18:00-19:00): 家常菜+半碗饭或不吃饭+大量蔬菜+肉</li>
+            <li>🏋️ 训练后(如果晚上练): 1勺蛋白粉+1根香蕉</li>
+        </ul>
+    </div>
+
+    <div class="diet-section">
+        <h3>喝水</h3>
+        <ul>
+            <li>每天至少喝 2.5-3L 水</li>
+            <li>训练中至少喝 500ml</li>
+            <li>早起先喝一大杯温水</li>
+            <li>饭前喝一杯水（增加饱腹感）</li>
+        </ul>
+    </div>
+
+    <div class="tips-card">
+        <h4>🍺 关于喝酒</h4>
+        <p>这32天尽量完全戒酒。酒精会：<br>
+        1. 直接抑制脂肪燃烧<br>
+        2. 降低睾酮，影响增肌<br>
+        3. 增加食欲，让你吃更多<br>
+        4. 影响睡眠质量和恢复<br>
+        <strong style="color:#ff4757;">32天而已，忍一忍！</strong></p>
+    </div>
+
+    <div class="tips-card">
+        <h4>💊 建议补剂（可选但推荐）</h4>
+        <p>1. <strong>乳清蛋白粉</strong> - 训练后1勺，方便补充蛋白质 (必买)<br>
+        2. <strong>肌酸</strong> - 每天5g，增加力量和肌肉充盈感<br>
+        3. <strong>鱼油</strong> - 每天1-2粒，抗炎恢复<br>
+        4. <strong>维生素D</strong> - 每天1粒，大部分人都缺<br>
+        5. <strong>咖啡/黑咖啡</strong> - 训练前30分钟一杯，提神燃脂</p>
+    </div>
+</div>
+
+<!-- ==================== 页面3: 每日打卡 ==================== -->
+<div class="page" id="page-daily">
+    <div class="header" style="background: linear-gradient(135deg, #9C27B0, #7B1FA2, #6A1B9A);">
+        <h1>📝 今日打卡</h1>
+        <p id="today-date-display">加载中...</p>
+    </div>
+
+    <div id="daily-checklist-container">
+        <div class="diet-section" style="margin-top:15px;">
+            <h3>🎯 今日必做清单</h3>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-water">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">💧 喝水 2.5L 以上</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-protein">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">🥩 蛋白质摄入够量（6个蛋+肉+蛋白粉）</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-workout">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">🏋️ 完成今日训练</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-cardio">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">🏃 完成有氧训练</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-rice">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">🍚 主食控制（每餐≤1小碗，晚餐减半）</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-junk">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">🚫 没吃垃圾食品/奶茶/可乐</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-sleep">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">😴 11点前准备入睡</span>
+            </div>
+            <div class="checklist-item" onclick="toggleChecklist(this)" data-key="cl-stretch">
+                <div class="cl-check">✓</div>
+                <span class="cl-text">🧘 训练前热身 + 训练后拉伸</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="weight-tracker">
+        <h3 style="color:#ff6b35; margin-bottom:12px;">⚖️ 体重记录</h3>
+        <div class="weight-input-row">
+            <label>今日体重</label>
+            <input type="number" id="weight-input" placeholder="例: 93.5" step="0.1" onchange="saveWeight()">
+            <span class="unit">kg</span>
+        </div>
+        <div class="weight-input-row">
+            <label>腰围</label>
+            <input type="number" id="waist-input" placeholder="例: 88" step="0.5" onchange="saveWaist()">
+            <span class="unit">cm</span>
+        </div>
+        <div style="margin-top:15px;">
+            <canvas id="weightChart" height="200"></canvas>
+        </div>
+        <div id="weight-history" style="margin-top:10px; font-size:0.8em; color:#888;"></div>
+    </div>
+
+    <div class="motivation-banner">
+        <div class="quote" id="daily-quote">"最痛苦的事不是每天训练，而是看着镜子里那个还没变好的自己。"</div>
+        <div class="author">——每一天都在变好</div>
+    </div>
+</div>
+
+<!-- ==================== 页面4: 数据统计 ==================== -->
+<div class="page" id="page-stats">
+    <div class="header" style="background: linear-gradient(135deg, #2196F3, #1976D2, #0D47A1);">
+        <h1>📊 数据统计</h1>
+        <p>用数据见证蜕变</p>
+    </div>
+
+    <div class="canvas-container" style="margin-top:15px;">
+        <h3 style="color:#ff6b35; margin-bottom:10px; font-size:0.9em;">📈 体重变化趋势</h3>
+        <canvas id="weightTrendChart" height="200"></canvas>
+    </div>
+
+    <div class="diet-section">
+        <h3>🏆 成就系统</h3>
+        <div id="achievements-list">
+            <div class="checklist-item" id="ach-3" style="pointer-events:none;">
+                <div class="cl-check">🏅</div>
+                <span class="cl-text">连续打卡3天 - <strong>起步者</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-7" style="pointer-events:none;">
+                <div class="cl-check">🥉</div>
+                <span class="cl-text">连续打卡7天 - <strong>一周战士</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-14" style="pointer-events:none;">
+                <div class="cl-check">🥈</div>
+                <span class="cl-text">连续打卡14天 - <strong>半月英雄</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-21" style="pointer-events:none;">
+                <div class="cl-check">🥇</div>
+                <span class="cl-text">连续打卡21天 - <strong>习惯养成</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-32" style="pointer-events:none;">
+                <div class="cl-check">🏆</div>
+                <span class="cl-text">完成全部32天 - <strong>铁血战神</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-5kg" style="pointer-events:none;">
+                <div class="cl-check">💪</div>
+                <span class="cl-text">减重5kg - <strong>初见成效</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-10kg" style="pointer-events:none;">
+                <div class="cl-check">🔥</div>
+                <span class="cl-text">减重10kg - <strong>脱胎换骨</strong></span>
+            </div>
+            <div class="checklist-item" id="ach-15kg" style="pointer-events:none;">
+                <div class="cl-check">👑</div>
+                <span class="cl-text">减重15kg - <strong>目标达成！</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="diet-section">
+        <h3>📋 训练日志摘要</h3>
+        <div id="training-summary" style="font-size:0.85em; line-height:1.8;">
+            <p>推日完成: <strong id="sum-push">0</strong> 次</p>
+            <p>拉日完成: <strong id="sum-pull">0</strong> 次</p>
+            <p>腿日完成: <strong id="sum-leg">0</strong> 次</p>
+            <p>有氧日完成: <strong id="sum-cardio">0</strong> 次</p>
+            <p>休息日: <strong id="sum-rest">0</strong> 次</p>
+        </div>
+    </div>
+
+    <div class="tips-card">
+        <h4>📐 一个月能减多少？科学分析</h4>
+        <p>你的情况: 180cm/95kg，有基础，体脂率估计 25-28%<br><br>
+        <strong>科学减脂速度:</strong> 每周 0.5-1kg 纯脂肪<br>
+        <strong>32天理想目标:</strong> 减脂 3-5kg + 减水分 3-5kg + 增肌 1-2kg<br>
+        <strong>体重秤变化:</strong> 可能减 7-12kg 体重<br><br>
+        <strong style="color:#ff6b35;">30斤(15kg)目标偏激进</strong>，但有基础+大体重初期减得快，
+        加上水分和糖原的流失，前两周可能就掉5-8斤，
+        后面稳定每周2-3斤，最终 <strong style="color:#4CAF50;">减10-15kg是完全可能的</strong>！<br><br>
+        更重要的是: <strong>体态变化 >> 体重数字</strong>，你会明显看到自己变紧实。</p>
+    </div>
+</div>
+
+<!-- ==================== 底部导航 ==================== -->
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="switchPage('plan')">
+        <span class="tab-icon">📋</span>
+        训练
+    </button>
+    <button class="tab-btn" onclick="switchPage('diet')">
+        <span class="tab-icon">🥗</span>
+        饮食
+    </button>
+    <button class="tab-btn" onclick="switchPage('daily')">
+        <span class="tab-icon">✅</span>
+        打卡
+    </button>
+    <button class="tab-btn" onclick="switchPage('stats')">
+        <span class="tab-icon">📊</span>
+        数据
+    </button>
+</div>
+
+<script>
+// ==================== 数据存储 ====================
+const STORAGE_KEY = 'fitplan_data_v2';
+
+function loadData() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : {
+            completedDays: [],
+            exercises: {},
+            checklist: {},
+            weights: {},
+            waists: {}
+        };
+    } catch(e) {
+        return { completedDays: [], exercises: {}, checklist: {}, weights: {}, waists: {} };
+    }
+}
+
+function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ==================== 页面切换 ====================
+function switchPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (page === 'stats') updateStats();
+    if (page === 'daily') updateDailyPage();
+}
+
+// ==================== 训练日展开/收起 ====================
+function toggleDay(dayNum) {
+    const card = document.getElementById('day-' + dayNum);
+    card.classList.toggle('expanded');
+}
+
+// ==================== 完成打卡 ====================
+function toggleComplete(dayNum) {
+    const data = loadData();
+    const idx = data.completedDays.indexOf(dayNum);
+    if (idx > -1) {
+        data.completedDays.splice(idx, 1);
+    } else {
+        data.completedDays.push(dayNum);
+        // 庆祝动画
+        celebrate(dayNum);
+    }
+    saveData(data);
+    updateUI();
+}
+
+function celebrate(dayNum) {
+    // 简单的庆祝效果
+    const card = document.getElementById('day-' + dayNum);
+    card.style.transform = 'scale(1.02)';
+    setTimeout(() => { card.style.transform = 'scale(1)'; }, 300);
+
+    // 检查成就
+    const data = loadData();
+    const streak = calcStreak(data.completedDays);
+    if (streak === 3 || streak === 7 || streak === 14 || streak === 21) {
+        setTimeout(() => {
+            alert('🎉 恭喜！连续打卡 ' + streak + ' 天！继续保持！');
+        }, 500);
+    }
+    if (data.completedDays.length === 32) {
+        setTimeout(() => {
+            alert('🏆🏆🏆 全部完成！你是铁血战神！🏆🏆🏆');
+        }, 500);
+    }
+}
+
+// ==================== 单个动作打勾 ====================
+function toggleExercise(dayNum, exIdx) {
+    const data = loadData();
+    const key = dayNum + '-' + exIdx;
+    if (!data.exercises) data.exercises = {};
+    data.exercises[key] = !data.exercises[key];
+    saveData(data);
+
+    const el = document.querySelector('[data-day="' + dayNum + '"][data-ex="' + exIdx + '"]');
+    if (el) {
+        el.classList.toggle('checked', data.exercises[key]);
+    }
+}
+
+// ==================== 每日打卡清单 ====================
+function toggleChecklist(el) {
+    const key = el.dataset.key;
+    const today = getTodayStr();
+    const data = loadData();
+    if (!data.checklist) data.checklist = {};
+    if (!data.checklist[today]) data.checklist[today] = {};
+    data.checklist[today][key] = !data.checklist[today][key];
+    saveData(data);
+    el.classList.toggle('checked', data.checklist[today][key]);
+}
+
+function getTodayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+// ==================== 体重记录 ====================
+function saveWeight() {
+    const val = document.getElementById('weight-input').value;
+    if (!val) return;
+    const data = loadData();
+    if (!data.weights) data.weights = {};
+    data.weights[getTodayStr()] = parseFloat(val);
+    saveData(data);
+    updateWeightDisplay();
+    checkWeightAchievements();
+}
+
+function saveWaist() {
+    const val = document.getElementById('waist-input').value;
+    if (!val) return;
+    const data = loadData();
+    if (!data.waists) data.waists = {};
+    data.waists[getTodayStr()] = parseFloat(val);
+    saveData(data);
+}
+
+function updateWeightDisplay() {
+    const data = loadData();
+    const weights = data.weights || {};
+    const dates = Object.keys(weights).sort();
+    let html = '';
+    dates.forEach(d => {
+        html += d + ': ' + weights[d] + 'kg  ';
+    });
+    document.getElementById('weight-history').textContent = html;
+    drawWeightChart(weights);
+}
+
+function checkWeightAchievements() {
+    const data = loadData();
+    const weights = data.weights || {};
+    const values = Object.values(weights);
+    if (values.length < 2) return;
+    const first = values[0];
+    const last = values[values.length - 1];
+    const diff = first - last;
+    if (diff >= 5) document.getElementById('ach-5kg').classList.add('checked');
+    if (diff >= 10) document.getElementById('ach-10kg').classList.add('checked');
+    if (diff >= 15) document.getElementById('ach-15kg').classList.add('checked');
+}
+
+function drawWeightChart(weights) {
+    const canvas = document.getElementById('weightChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dates = Object.keys(weights).sort();
+    const values = dates.map(d => weights[d]);
+    if (values.length < 1) return;
+
+    const W = canvas.width = canvas.offsetWidth * 2;
+    const H = canvas.height = 300;
+    ctx.clearRect(0, 0, W, H);
+
+    const padding = { top: 30, right: 30, bottom: 40, left: 50 };
+    const chartW = W - padding.left - padding.right;
+    const chartH = H - padding.top - padding.bottom;
+
+    const minV = Math.min(...values) - 1;
+    const maxV = Math.max(...values) + 1;
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(W - padding.right, y);
+        ctx.stroke();
+        const val = (maxV - (maxV - minV) * (i / 4)).toFixed(1);
+        ctx.fillStyle = '#666';
+        ctx.font = '18px sans-serif';
+        ctx.fillText(val, 5, y + 5);
+    }
+
+    if (values.length === 1) {
+        const x = padding.left + chartW / 2;
+        const y = padding.top + chartH / 2;
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff6b35';
+        ctx.fill();
+        return;
+    }
+
+    // Draw line
+    ctx.beginPath();
+    ctx.strokeStyle = '#ff6b35';
+    ctx.lineWidth = 3;
+    values.forEach((v, i) => {
+        const x = padding.left + (chartW / (values.length - 1)) * i;
+        const y = padding.top + chartH - ((v - minV) / (maxV - minV)) * chartH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Draw dots
+    values.forEach((v, i) => {
+        const x = padding.left + (chartW / (values.length - 1)) * i;
+        const y = padding.top + chartH - ((v - minV) / (maxV - minV)) * chartH;
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff6b35';
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = '16px sans-serif';
+        ctx.fillText(v + '', x - 12, y - 12);
+    });
+}
+
+// ==================== 计算连续打卡 ====================
+function calcStreak(completed) {
+    if (!completed || completed.length === 0) return 0;
+    const sorted = [...completed].sort((a, b) => a - b);
+    let streak = 1;
+    let maxStreak = 1;
+    for (let i = 1; i < sorted.length; i++) {
+        if (sorted[i] === sorted[i-1] + 1) {
+            streak++;
+            maxStreak = Math.max(maxStreak, streak);
+        } else {
+            streak = 1;
+        }
+    }
+    return maxStreak;
+}
+
+// ==================== 更新界面 ====================
+function updateUI() {
+    const data = loadData();
+    const completed = data.completedDays || [];
+
+    // 更新卡片状态
+    for (let i = 1; i <= 32; i++) {
+        const card = document.getElementById('day-' + i);
+        if (card) {
+            card.classList.toggle('completed', completed.includes(i));
+        }
+    }
+
+    // 更新动作打勾状态
+    if (data.exercises) {
+        Object.keys(data.exercises).forEach(key => {
+            const [d, e] = key.split('-');
+            const el = document.querySelector('[data-day="' + d + '"][data-ex="' + e + '"]');
+            if (el) el.classList.toggle('checked', data.exercises[key]);
+        });
+    }
+
+    // 更新统计
+    const count = completed.length;
+    const streak = calcStreak(completed);
+    document.getElementById('stat-completed').textContent = count;
+    document.getElementById('stat-remaining').textContent = 32 - count;
+    document.getElementById('stat-streak').textContent = streak;
+    document.getElementById('stat-rate').textContent = Math.round(count / 32 * 100) + '%';
+    document.getElementById('progress-text').textContent = count + '/32 天';
+    document.getElementById('progress-fill').style.width = (count / 32 * 100) + '%';
+
+    // 更新成就
+    if (streak >= 3) document.getElementById('ach-3').classList.add('checked');
+    if (streak >= 7) document.getElementById('ach-7').classList.add('checked');
+    if (streak >= 14) document.getElementById('ach-14').classList.add('checked');
+    if (streak >= 21) document.getElementById('ach-21').classList.add('checked');
+    if (count >= 32) document.getElementById('ach-32').classList.add('checked');
+
+    // 高亮今天
+    highlightToday();
+}
+
+function highlightToday() {
+    const startDate = new Date(2026, 2, 16); // 3月16日
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const diffDays = Math.floor((today - startDate) / (1000*60*60*24)) + 1;
+    if (diffDays >= 1 && diffDays <= 32) {
+        const card = document.getElementById('day-' + diffDays);
+        if (card) {
+            card.classList.add('today');
+            // 自动展开今天
+            card.classList.add('expanded');
+        }
+    }
+}
+
+function updateDailyPage() {
+    const today = getTodayStr();
+    document.getElementById('today-date-display').textContent = today;
+
+    const data = loadData();
+    // 恢复打卡状态
+    if (data.checklist && data.checklist[today]) {
+        document.querySelectorAll('.checklist-item').forEach(el => {
+            const key = el.dataset.key;
+            if (data.checklist[today][key]) {
+                el.classList.add('checked');
+            }
+        });
+    }
+
+    // 恢复体重
+    if (data.weights && data.weights[today]) {
+        document.getElementById('weight-input').value =        data.weights[today] = parseFloat(val);
+    }
+    if (data.waists && data.waists[today]) {
+        document.getElementById('waist-input').value = data.waists[today];
+    }
+
+    updateWeightDisplay();
+}
+
+function updateStats() {
+    const data = loadData();
+    const completed = data.completedDays || [];
+    // 简单统计各类型训练
+    // Day模式: 推-拉-腿-有氧-推-拉-休息 (7天循环)
+    let push=0, pull=0, leg=0, cardio=0, rest=0;
+    completed.forEach(d => {
+        const mod = (d - 1) % 7;
+        if (mod === 0 || mod === 4) push++;
+        else if (mod === 1 || mod === 5) pull++;
+        else if (mod === 2) leg++;
+        else if (mod === 3) cardio++;
+        else if (mod === 6) rest++;
+    });
+    document.getElementById('sum-push').textContent = push;
+    document.getElementById('sum-pull').textContent = pull;
+    document.getElementById('sum-leg').textContent = leg;
+    document.getElementById('sum-cardio').textContent = cardio;
+    document.getElementById('sum-rest').textContent = rest;
+
+    checkWeightAchievements();
+}
+
+// ==================== 每日激励语 ====================
+const quotes = [
+    "你今天的汗水，是明天的骄傲。",
+    "没有人能替你努力，即使是你自己。",
+    "32天后你会感谢今天的自己。",
+    "嘴上说说的人很多，真正做的人很少。你要做后者。",
+    "自律给你自由。",
+    "不是因为看到希望才坚持，而是坚持了才看到希望。",
+    "你的身体听得到你的决心。",
+    "每一次举铁，都是在给未来的自己投票。",
+    "放弃很容易，但你不会。",
+    "痛苦是暂时的，放弃是永远的。",
+    "你不是在减肥，你是在重塑自己。",
+    "当你想放弃时，想想为什么开始。",
+    "最好的投资，是投资自己的身体。",
+    "三个月后的你，值得你今天的努力。",
+    "弱者找借口，强者找方法。",
+    "铁不会辜负你的汗水。",
+];
+
+function showDailyMotivation() {
+    const container = document.getElementById('motivation-container');
+    const dayOfYear = Math.floor((new Date() - new Date(2026, 0, 1)) / (1000*60*60*24));
+    const quote = quotes[dayOfYear % quotes.length];
+    container.innerHTML = '<div class="motivation-banner"><div class="quote">"' + quote + '"</div><div class="author">——每日燃脂语录</div></div>';
+    document.getElementById('daily-quote').textContent = '"' + quotes[(dayOfYear + 3) % quotes.length] + '"';
+}
+
+// ==================== 初始化 ====================
+document.addEventListener('DOMContentLoaded', function() {
+    updateUI();
+    showDailyMotivation();
+    updateDailyPage();
+});
+</script>
+</body>
+</html>
